@@ -141,9 +141,9 @@ Full result: `python/examples/quality-qwen3-0.6b-int4.json`.
 - 4.50 / 2.50 / 1.50 bits per weight: 4 / 2 / 1 bits of code plus 16 bits of f16
   scale per 32 weights.
 
-## The runtime — reproducible with `npx aamt`, not from this repository's source
+## The runtime — reproducible with `npx @asamanthinks/aamt`, not from this repository's source
 
-These come from the closed engine that runs complete models from `.aamt` files. It ships compiled as `npx aamt`,
+These come from the closed engine that runs complete models from `.aamt` files. It ships compiled as `npx @asamanthinks/aamt`,
 so anyone can rerun them on their own hardware; its source is not in this repository.
 
 `aamt bench`, one run per model on the M1 Max above, 2026-10-25, load average about 4 during the run (other
@@ -168,7 +168,7 @@ Other recorded figures: GaIaN is 3.23 GB on disk as `.aamt`; a 16-bit 8B model i
 
 - **No end-to-end tokens/s from this repository's source.** It holds the format,
   the baker and two kernels. The runtime that produces the figures above is
-  `npx aamt`, which is closed-source.
+  `npx @asamanthinks/aamt`, which is closed-source.
 - **No claim that `.aamt` is faster than GGUF**, or than any other format. No
   head-to-head benchmark has been run. The comparison in the README is about
   what each format is designed to hold.
