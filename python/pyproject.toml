@@ -1,0 +1,22 @@
+[project]
+name = "aamt"
+version = "0.1.0"
+description = "Read .aamt model files with numpy, and open them in Hugging Face transformers."
+readme = "README.md"
+license = "LicenseRef-AAMT-Community-1.0"
+requires-python = ">=3.10"
+dependencies = ["numpy>=1.24"]
+
+[project.optional-dependencies]
+hf = ["torch>=2.2", "transformers>=4.51"]
+quality = ["torch>=2.2", "transformers>=4.51", "pyarrow>=14", "huggingface_hub>=0.23"]
+
+[project.urls]
+Repository = "https://github.com/wwhitehead/aamt"
+
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["aamt"]

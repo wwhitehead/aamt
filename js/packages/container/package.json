@@ -1,0 +1,19 @@
+{
+  "name": "@aamt/container",
+  "version": "0.1.0",
+  "description": "The unified .aamt container: one immutable, page-aligned file, a layer table (model / world / mind / experience / code), and 384-bit layer-separated identities. Pure core with a pluggable SHA-384 port; ./node supplies node:crypto.",
+  "license": "SEE LICENSE IN LICENSE.md",
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./node": "./src/node.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json",
+    "bench:stream": "tsx scripts/bench-stream.ts"
+  },
+  "dependencies": { "@aamt/tera": "workspace:*" },
+  "devDependencies": { "@aamt/model": "workspace:*" }
+}

@@ -1,0 +1,27 @@
+{
+  "name": "@aamt/model",
+  "version": "0.1.0",
+  "description": "GPU-native .aamt model weights: INT4 / ternary / 1-bit tensors bit-packed so a shader reads one u32 and unpacks 8, 16 or 32 weights in-register; the AMDL multi-tensor model file; a streaming safetensors baker.",
+  "license": "SEE LICENSE IN LICENSE.md",
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "bin": {
+    "aamt-model": "./src/cli.ts"
+  },
+  "exports": {
+    ".": "./src/index.ts",
+    "./tensor": "./src/tensor.ts",
+    "./model": "./src/model.ts",
+    "./amdl-inspect": "./src/amdl-inspect.ts",
+    "./safetensors": "./src/safetensors.ts",
+    "./f16": "./src/f16.ts",
+    "./bake": "./src/bake.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "devDependencies": {
+    "@webgpu/types": "^0.1.74"
+  }
+}

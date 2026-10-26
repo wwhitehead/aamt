@@ -1,0 +1,5 @@
+packages:
+  - js/packages/*
+
+onlyBuiltDependencies:
+  - esbuild

@@ -1,0 +1,10 @@
+.aamt
+Copyright 2026 Weslyn Cory Whitehead Jr. / AsAManThinks Research. All rights reserved except as licensed.
+
+Source code: AAMT Community License 1.0 (LICENSE.md).
+Specification (SPEC.md): CC BY-ND 4.0, with the patent reservation in PATENTS.md.
+Pending patent applications: see PATENTS.md. Trademarks and other works: see COPYRIGHT.md.
+
+This repository depends on third-party open-source packages (vitest, TypeScript,
+tsx, webgpu/Dawn, numpy, PyTorch and Hugging Face transformers for the optional
+Python examples), each under its own licence. None of their code is copied here.
