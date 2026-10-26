@@ -1,0 +1,11 @@
+{
+  "name": "@aamt/tera",
+  "version": "0.1.0",
+  "description": "TERA coordinate math for .aamt: registers, the 16 Meji orthants, the 256 Odu cells, the product Fisher-Rao metric, and deterministic transcendentals. Pure, dependency-free.",
+  "license": "SEE LICENSE IN LICENSE.md",
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": { ".": "./src/index.ts" },
+  "scripts": { "typecheck": "tsc -p tsconfig.json" }
+}

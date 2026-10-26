@@ -1,0 +1,14 @@
+node_modules/
+native/build/
+native/wasm/dist/
+native/metal/build/
+native/examples/oracle-demo.tsv
+native/examples/oracle-demo.aamt
+__pycache__/
+*.pyc
+.DS_Store
+*.o
+*.dylib
+*.so
+*.safetensors
+/models/

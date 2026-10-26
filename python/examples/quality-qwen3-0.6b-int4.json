@@ -1,0 +1,44 @@
+{
+  "aamt": "qwen3-0.6b-int4.aamt (pnpm bake, int4, group 32)",
+  "original": "Qwen/Qwen3-0.6B (bf16 safetensors, loaded as float32)",
+  "device": "mps",
+  "dtype": "float32",
+  "data": "GSM8K test, first 64 items (question + answer), max 256 tokens each",
+  "logits": {
+    "tokens": 11317,
+    "perplexity_original": 5.0888245468982625,
+    "perplexity_aamt": 6.051497692252482,
+    "perplexity_change_pct": 18.917397062568963,
+    "top1_agreement_pct": 80.0123707696386,
+    "mean_kl": 0.25178477388499765
+  },
+  "greedy": {
+    "prompts": 8,
+    "new_tokens": 64,
+    "identical_outputs": 0,
+    "mean_matching_prefix_tokens": 1.125,
+    "examples": [
+      {
+        "prompt": "Janet\u2019s ducks lay 16 eggs per day. She eats three for breakfast every morning and bakes muffins for her friends every day with four. She sells the remainder at the farmers' market daily for $2 per fresh duck egg. How much in dollars does she make every day at the farmers' market?",
+        "original": "We are given the following information:\n\n- Janet\u2019s ducks lay **16 eggs per day**.\n- She **eats 3 eggs** for breakfast every morning.\n- She **bakes 4 eggs** for her friends every day.\n- The **remainder** is sold at the farmers' market for **$",
+        "aamt": "Let's break down the problem step by step:\n\n### 1. **Eggs from the ducks:**\n- Janet's ducks lay **16 eggs per day**.\n- She eats **3 eggs** for breakfast.\n- She also bakes **4 eggs** for her friends.\n\n### 2. **"
+      },
+      {
+        "prompt": "A robe takes 2 bolts of blue fiber and half that much white fiber.  How many bolts in total does it take?",
+        "original": "We are told:\n\n- A robe takes **2 bolts of blue fiber**.\n- Half that much white fiber.\n\nSo, the **white fiber** is half of the blue fiber.\n\n- Blue fiber: **2 bolts**\n- White fiber: **2 / 2 = 1 bolt**\n\nNow, add the two",
+        "aamt": "Let's break down the problem step by step:\n\n- A **robe** takes **2 bolts of blue fiber**.\n- Then, it takes **half that much** in white fiber.\n\nSo, let's calculate:\n\n- 2 bolts of blue fiber = 2 bolts.\n- Then, half of 2 bolts"
+      }
+    ]
+  },
+  "seconds": 46.8,
+  "harness_check": {
+    "f32_aamt_perplexity_change_pct": 0.0,
+    "f32_aamt_top1_agreement_pct": 100.0,
+    "note": "the same harness on an all-f32 .aamt of the same weights"
+  },
+  "int4_with_f32_embedding": {
+    "perplexity_change_pct": 16.48,
+    "top1_agreement_pct": 81.24,
+    "note": "diagnostic: the tied embedding restored to full precision"
+  }
+}

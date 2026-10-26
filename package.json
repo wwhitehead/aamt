@@ -1,0 +1,26 @@
+{
+  "name": "aamt",
+  "version": "0.1.0",
+  "private": true,
+  "description": "The .aamt file format: GPU-native model weights, spatial memory and content-addressed layers in one memory-mapped file.",
+  "license": "SEE LICENSE IN LICENSE.md",
+  "type": "module",
+  "packageManager": "pnpm@10.18.3",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "test": "vitest run",
+    "typecheck": "pnpm -r typecheck",
+    "native": "./native/build.sh test",
+    "bake": "pnpm --filter @aamt/model exec tsx src/cli.ts bake",
+    "inspect": "pnpm --filter @aamt/model exec tsx src/cli.ts inspect",
+    "gpu:check": "pnpm --filter @aamt/webgpu exec tsx src/check.ts"
+  },
+  "devDependencies": {
+    "@types/node": "^22.19.0",
+    "tsx": "^4.20.6",
+    "typescript": "^5.9.3",
+    "vitest": "^3.2.4"
+  }
+}

@@ -1,0 +1,8 @@
+build/
+wasm/dist/
+metal/build/
+examples/oracle-demo.tsv
+examples/oracle-demo.aamt
+*.o
+*.dylib
+*.so

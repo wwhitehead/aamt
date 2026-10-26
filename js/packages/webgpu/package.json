@@ -1,0 +1,22 @@
+{
+  "name": "@aamt/webgpu",
+  "version": "0.1.0",
+  "description": "Reference WebGPU kernels for .aamt weights: dequantization and the multi-row GEMV used on the decode path, with a GPU-equals-CPU check that runs from a baked .aamt file.",
+  "license": "SEE LICENSE IN LICENSE.md",
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "dependencies": {
+    "@aamt/model": "workspace:*",
+    "webgpu": "^0.4.0"
+  },
+  "devDependencies": {
+    "@webgpu/types": "^0.1.74"
+  }
+}
