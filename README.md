@@ -14,9 +14,9 @@ commercial use is licensed ([LICENSE.md](LICENSE.md), [COMMERCIAL.md](COMMERCIAL
 ## Try it: one command
 
 ```
-npx aamt                  # chat with InnerSight on your GPU (0.72 GB download)
-npx aamt run gaian        # BeyondSight GaIaN, 8B ternary (3.23 GB)
-npx aamt bench gaian      # measure it on your machine; prints a shareable card
+npx @asamanthinks/aamt                  # chat with InnerSight on your GPU (0.72 GB download)
+npx @asamanthinks/aamt run gaian        # BeyondSight GaIaN, 8B ternary (3.23 GB)
+npx @asamanthinks/aamt bench gaian      # measure it on your machine; prints a shareable card
 ```
 
 `aamt` is the runtime: the engine that runs complete models from `.aamt` files,
@@ -183,7 +183,7 @@ python3 -m unittest discover -s python/tests
 
 **Not in this repository:** the full inference engine (forward passes, KV cache,
 sampling, tuning) and the BeyondSight model weights. The engine ships compiled
-inside `npx aamt`; the models are on Hugging Face under the BeyondSight Model
+inside `npx @asamanthinks/aamt`; the models are on Hugging Face under the BeyondSight Model
 License. For a commercial licence or a pilot: licensing@asamanthinks.com.
 
 ## Roadmap
@@ -196,7 +196,7 @@ License. For a commercial licence or a pilot: licensing@asamanthinks.com.
 - **f16 scales on disk.** The GPU already reads scales as f16 pairs; storing them that way halves scale bytes on disk too.
 - **Embedded models by default.** Pack the AMDL model inside the container's page-aligned model layer, so a model, its memory and its identity ship as one file.
 - **Windows native build.** The C++ core builds and passes its tests on macOS and Linux in CI; Windows needs a port from POSIX `mmap`.
-- **npm and PyPI packages for the format libraries.** Today, clone and `pnpm install`; the runtime is already `npx aamt`.
+- **npm and PyPI packages for the format libraries.** Today, clone and `pnpm install`; the runtime is already `npx @asamanthinks/aamt`.
 
 Issues and pull requests are welcome; contributions need the CLA in [CONTRIBUTING.md](CONTRIBUTING.md).
 
