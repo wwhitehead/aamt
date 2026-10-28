@@ -123,13 +123,27 @@ Full result: `python/examples/quality-qwen3-0.6b-int4.json`.
 - Query `(0.72, 0.31, 0.88, 0.15)` routes to cell `5.6.13.1` at depth 4 with a
   20-record bucket, the same route WP-23 §6 reports.
 
+### Self-repair
+
+`./native/build.sh test` runs `native/tests/test_selfheal.cpp`. Each record is written twice (the record and its
+mirror), Reed–Solomon encoded; 400 trials each put 20 random 4-bit errors across both copies and read back
+through `aamt_read_verified`:
+
+- Without the CRC: **16 correct, 222 refused, 162 wrong-but-OK**. RS(15,13) cannot detect damage that heavy and
+  "repairs" it into different bytes with a success status.
+- With the CRC (`aamt_builder_add_mirrored_ecc_checked`): **33 correct, 367 refused, 0 wrong-but-OK**.
+- One copy shredded entirely: the record is recovered from the other copy, checked or not.
+
+The same comparison runs live in the browser at asamanthinks.com/aamt (the Self-Repair Lab), through this
+library's WebAssembly build.
+
 ### Tests
 
 - `pnpm test`: 205 tests in 10 files pass, including the GPU suite (13 cases:
   three kinds × four shapes that cross the kernel's tile and row edges, plus a
   refusal case).
-- `./native/build.sh test`: round-trip with journal replay, and GF(16)
-  Reed–Solomon, pass.
+- `./native/build.sh test`: round-trip with journal replay, GF(16)
+  Reed–Solomon, and self-repair, pass (3 of 3).
 - `pnpm typecheck`: clean under `strict` and `noUncheckedIndexedAccess`.
 - `python -m unittest discover -s python/tests`: 9 tests pass. The Python
   reader reproduces the TypeScript reader's dequantised values exactly, for

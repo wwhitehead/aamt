@@ -58,33 +58,36 @@ void Builder::addMirrored(uint64_t id, const float tera[4], const void* data, ui
     records_.push_back(std::move(mirror));
 }
 
-void Builder::addWithECC(uint64_t id, const float tera[4], const void* data, uint32_t size) {
-    const auto encoded = rs15_13::encodePayload(static_cast<const uint8_t*>(data), size);
+void Builder::addWithECC(uint64_t id, const float tera[4], const void* data, uint32_t size, bool checked) {
+    const auto* bytes = static_cast<const uint8_t*>(data);
+    const auto encoded = checked ? rs15_13::encodeChecked(bytes, size) : rs15_13::encodePayload(bytes, size);
     OwnedRecord r;
     r.id = id;
     clampTera4(tera, r.tera);
     r.data = encoded;
-    r.flags = kRecordRS;
+    r.flags = checked ? (kRecordRS | kRecordCRC) : kRecordRS;
     records_.push_back(std::move(r));
 }
 
-void Builder::addMirroredWithECC(uint64_t id, const float tera[4], const void* data, uint32_t size) {
+void Builder::addMirroredWithECC(uint64_t id, const float tera[4], const void* data, uint32_t size, bool checked) {
     float clamped[4];
     clampTera4(tera, clamped);
-    const auto encoded = rs15_13::encodePayload(static_cast<const uint8_t*>(data), size);
+    const auto* bytes = static_cast<const uint8_t*>(data);
+    const auto encoded = checked ? rs15_13::encodeChecked(bytes, size) : rs15_13::encodePayload(bytes, size);
+    const uint8_t crc = checked ? kRecordCRC : 0;
 
     OwnedRecord primary;
     primary.id = id;
     std::memcpy(primary.tera, clamped, sizeof(clamped));
     primary.data = encoded;
-    primary.flags = kRecordRS;
+    primary.flags = kRecordRS | crc;
     records_.push_back(std::move(primary));
 
     OwnedRecord mirror;
     mirror.id = id;
     householderReflectT(clamped, mirror.tera); // routing key AND stored tera
     mirror.data = encoded; // same RS-encoded bytes, stored at the reflected leaf
-    mirror.flags = kRecordMirror | kRecordRS;
+    mirror.flags = kRecordMirror | kRecordRS | crc;
     records_.push_back(std::move(mirror));
 }
 
@@ -569,7 +572,7 @@ std::optional<rs15_13::PayloadDecodeResult> decodeRecord(const RecordHeader* rh)
     if (!rh) return std::nullopt;
     const uint8_t* data = reinterpret_cast<const uint8_t*>(rh) + sizeof(RecordHeader);
     if (rh->flags & kRecordRS) {
-        return rs15_13::decodePayload(data, rh->size);
+        return (rh->flags & kRecordCRC) ? rs15_13::decodeChecked(data, rh->size) : rs15_13::decodePayload(data, rh->size);
     }
     rs15_13::PayloadDecodeResult raw;
     raw.ok = true;

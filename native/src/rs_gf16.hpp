@@ -159,6 +159,27 @@ inline std::vector<uint8_t> encodePayload(const uint8_t* data, uint32_t size) {
     return out;
 }
 
+// ---- checked payload: CRC-32 of the original bytes, RS-protected with them ----------
+// IEEE 802.3 polynomial, reflected (the zlib / PNG / Ethernet CRC), table-free: payloads are small and this runs at
+// pack and verified-read time only, never in routing.
+inline uint32_t crc32(const uint8_t* data, size_t size) {
+    uint32_t c = 0xFFFFFFFFu;
+    for (size_t i = 0; i < size; ++i) {
+        c ^= data[i];
+        for (int k = 0; k < 8; ++k) c = (c >> 1) ^ (0xEDB88320u & (0u - (c & 1u)));
+    }
+    return ~c;
+}
+
+/** encodePayload over (crc32(data) little-endian ‖ data), so the checksum is repaired along with the payload. */
+inline std::vector<uint8_t> encodeChecked(const uint8_t* data, uint32_t size) {
+    const uint32_t c = crc32(data, size);
+    std::vector<uint8_t> framed = { static_cast<uint8_t>(c), static_cast<uint8_t>(c >> 8),
+                                    static_cast<uint8_t>(c >> 16), static_cast<uint8_t>(c >> 24) };
+    framed.insert(framed.end(), data, data + size);
+    return encodePayload(framed.data(), static_cast<uint32_t>(framed.size()));
+}
+
 struct PayloadDecodeResult {
     bool ok = true;              // false only if a block's syndrome was unresolvable
     uint32_t correctedSymbols = 0; // count of blocks where a single-nibble repair fired
@@ -200,6 +221,18 @@ inline PayloadDecodeResult decodePayload(const uint8_t* encoded, uint32_t encode
             (decodedNibbles[i * 2] << 4) | decodedNibbles[i * 2 + 1]));
     }
     return result;
+}
+
+/** decodePayload, then verify and strip the CRC written by encodeChecked. A mismatch is ok=false: the copy is unreadable. */
+inline PayloadDecodeResult decodeChecked(const uint8_t* encoded, uint32_t encodedSize) {
+    PayloadDecodeResult r = decodePayload(encoded, encodedSize);
+    if (!r.ok) return r;
+    if (r.data.size() < 4) { r.ok = false; r.data.clear(); return r; }
+    const uint32_t want = static_cast<uint32_t>(r.data[0]) | (static_cast<uint32_t>(r.data[1]) << 8) |
+                          (static_cast<uint32_t>(r.data[2]) << 16) | (static_cast<uint32_t>(r.data[3]) << 24);
+    if (crc32(r.data.data() + 4, r.data.size() - 4) != want) { r.ok = false; r.data.clear(); return r; }
+    r.data.erase(r.data.begin(), r.data.begin() + 4);
+    return r;
 }
 
 } // namespace aamt::rs15_13
