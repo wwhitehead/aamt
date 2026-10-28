@@ -68,6 +68,7 @@ world it acts in, and the code it runs, each with an identity you can verify.
 | Identity           | none                 | none                                    | **SHA-384** per record, per layer and per file, separated by layer         |
 | Memory index       | none                 | none                                    | **hexadeca-tree** over a 4-D coordinate space: ~230–370 ns per route at 1M records (medians across sessions) |
 | Replay             | none                 | none                                    | **40-byte journal** per decision, replayed bit-exactly against the file hash |
+| Self-repair        | none                 | none                                    | **mirror + RS(15,13) + CRC-32** per record: repaired, recovered from the mirror, or refused; 0 wrong in 400 heavy-damage trials |
 | Alignment          | 8 B                  | 32 B (configurable)                     | **16 KiB pages** for GPU-candidate arenas (Apple Silicon zero-copy)          |
 
 GGUF is excellent at what it was built for, and `.aamt` reads none of its
@@ -167,7 +168,7 @@ and what measurement changed.
 | Path | What | Tests |
 |---|---|---|
 | [`SPEC.md`](SPEC.md) | The byte layouts: tensor, model (AMDL), container v1.x, substrate v0, and how to tell them apart | — |
-| `native/` | C++17 substrate core, C ABI, CLI, Python bindings, WebAssembly build, Metal zero-copy bench | round-trip, journal replay, GF(16) Reed–Solomon |
+| `native/` | C++17 substrate core, C ABI, CLI, Python bindings, WebAssembly build, Metal zero-copy bench, CRDT bindings (JS runs in a browser) | round-trip, journal replay, GF(16) Reed–Solomon, self-repair |
 | `js/packages/tera` | The coordinate math: 16 Meji orthants, 256 Odu cells, product Fisher–Rao metric, deterministic transcendentals | ALU properties, 400-case parity fixture |
 | `js/packages/container` | The unified container: five layers, 384-bit ids, streaming writer, zero-copy reader, Odu index, adaptive tree | 118, including bit-flip fuzzing |
 | `js/packages/model` | Tensor and model formats, the streaming safetensors baker, f16 scale packing | bake round-trip from real safetensors |

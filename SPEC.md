@@ -267,6 +267,29 @@ A point `v` in a box with midpoint `mid` goes to child
 32-byte header (`u64 id, f32 point[4], u32 size, u8 flags, u8[3]`) followed by
 `size` bytes, padded to 8.
 
+Record `flags` (readers must ignore bits they do not know; bits 3–7 are reserved, written 0):
+
+```
+bit 0  mirror   a second copy of record `id`, stored at its reflection T' = 1 − T (E, R, A unchanged),
+                so it lives in the opposite half of the tree, a different region of the file
+bit 1  rs       the payload is Reed–Solomon encoded (below), not raw bytes
+bit 2  crc      only with bit 1: the encoded bytes are crc32(data) ‖ data, so a mis-correction is detected
+```
+
+The `rs` encoding is RS(15,13) over GF(16) (primitive polynomial x⁴ + x + 1, α = 2, generator
+g(x) = (x − α⁰)(x − α¹)): a `u32` little-endian length of the bytes being encoded, then those bytes as
+nibbles (high nibble first) in blocks of 13, each zero-padded and encoded to 15 nibbles (two parity nibbles
+first), packed two per byte. Any one corrupted nibble in a block is repaired exactly. With `crc`, the bytes
+being encoded are the CRC-32 (IEEE 802.3, reflected, as in zlib) of the original payload, little-endian,
+followed by the payload; a reader that finds the CRC does not match must treat that copy as unreadable.
+
+A verified read decodes both copies. If the record decodes (and, with `crc`, checks), it is served, unless the
+mirror also decodes to different bytes: two readable copies that disagree are refused, since the file cannot say
+which is right. If only the mirror decodes, it is served. If neither does, the read is refused. It never serves
+bytes that fail the check. Without `crc`, heavy damage
+can be "repaired" into different bytes that decode cleanly (measured in CLAIMS.md), which is why new writers
+should set it. Files written without bits 1 and 2 read exactly as before.
+
 The **journal** is a sidecar `.aamtj` of 40-byte records
 `{ u64 t_ns, u64 file_hash, f32 point[4], u32 path, u32 depth }`, one per query.
 Because the file is immutable and content-hashed, `(file_hash, point)`

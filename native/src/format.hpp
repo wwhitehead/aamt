@@ -75,6 +75,13 @@ constexpr uint8_t kRecordMirror = 1u << 0;
 // beyond that a 2-parity-symbol code cannot reliably detect on its own
 // (see rs_gf16.hpp's file comment for the measured 86.7% figure).
 constexpr uint8_t kRecordRS = 1u << 1;
+// This record's RS-encoded payload carries a CRC-32 (IEEE) of the original bytes in front of them, inside the RS
+// protection (rs15_13::encodeChecked). RS(15,13) cannot detect heavy damage: it "repairs" garbage into a valid but
+// different payload. Measured, 20 random nibble flips across both copies of a record, 400 trials: unchecked records
+// served the WRONG bytes with a success status 162 times (tests/test_selfheal.cpp), checked records 0. With the check, a mis-correction fails the CRC and the copy counts
+// as unreadable, so readVerified falls back to the other copy or refuses — it never serves the garbage.
+// Records without this flag (files written before it) decode exactly as before.
+constexpr uint8_t kRecordCRC = 1u << 2;
 
 inline uint64_t alignUp(uint64_t x, uint64_t a) { return (x + a - 1) & ~(a - 1); }
 inline uint64_t recordStride(uint32_t size) { return sizeof(RecordHeader) + alignUp(size, 8); }

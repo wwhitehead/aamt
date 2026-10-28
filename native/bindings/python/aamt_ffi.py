@@ -269,6 +269,10 @@ def _load(path: str) -> ctypes.CDLL:
         lib.aamt_builder_add_mirrored_ecc.argtypes = [ctypes.c_void_p, ctypes.c_uint64,
                                                        ctypes.c_float * 4, ctypes.c_char_p,
                                                        ctypes.c_uint32]
+        for fn in ('aamt_builder_add_ecc_checked', 'aamt_builder_add_mirrored_ecc_checked'):
+            getattr(lib, fn).restype = ctypes.c_int
+            getattr(lib, fn).argtypes = [ctypes.c_void_p, ctypes.c_uint64, ctypes.c_float * 4,
+                                         ctypes.c_char_p, ctypes.c_uint32]
         lib.aamt_read_verified.restype = ctypes.c_int64
         lib.aamt_read_verified.argtypes = [ctypes.c_void_p, ctypes.c_uint64,
                                            ctypes.c_float * 4, ctypes.POINTER(ctypes.c_uint8),
@@ -865,6 +869,19 @@ class AamtBuilder:
         tera_arr = (ctypes.c_float * 4)(*tera)
         self._lib.aamt_builder_add_mirrored_ecc(self._handle, id_, tera_arr, data, len(data))
 
+    def add_ecc_checked(self, id_: int, tera, data: bytes) -> None:
+        """add_ecc plus a CRC-32 of the original bytes inside the RS protection,
+        so heavy damage RS would mis-correct is detected instead of served (see
+        aamt.h, aamt_builder_add_ecc_checked, for the measurement)."""
+        tera_arr = (ctypes.c_float * 4)(*tera)
+        self._lib.aamt_builder_add_ecc_checked(self._handle, id_, tera_arr, data, len(data))
+
+    def add_mirrored_ecc_checked(self, id_: int, tera, data: bytes) -> None:
+        """add_mirrored_ecc with the CRC check: a shredded copy is unreadable,
+        so read_verified recovers the record from the other copy. Use this for
+        new substrates; read_verified needs no change."""
+        tera_arr = (ctypes.c_float * 4)(*tera)
+        self._lib.aamt_builder_add_mirrored_ecc_checked(self._handle, id_, tera_arr, data, len(data))
     def write(self, path: str) -> None:
         err = ctypes.create_string_buffer(256)
         if self._lib.aamt_builder_write(self._handle, path.encode(), err, 256) != 0:

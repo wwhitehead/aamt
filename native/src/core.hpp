@@ -54,13 +54,15 @@ public:
     // the cost of ~15/13 size expansion. Not a substitute for
     // addMirrored's independent check; see rs_gf16.hpp for the measured
     // reason why.
-    void addWithECC(uint64_t id, const float tera[4], const void* data, uint32_t size);
+    // `checked`: also store a CRC-32 of the original bytes inside the RS protection (kRecordCRC), so a heavy-damage
+    // mis-correction is detected instead of served. Off by default: the unchecked encoding is a published contract.
+    void addWithECC(uint64_t id, const float tera[4], const void* data, uint32_t size, bool checked = false);
     // Both defenses on one record: primary AND mirror each store the SAME
     // RS(15,13)-encoded payload, so either copy can self-repair a single
     // corrupted nibble for free, and the mirror also backstops whatever a
     // lone RS block cannot decide about itself. Feeds Reader::readVerified,
     // the read-side function this exists for.
-    void addMirroredWithECC(uint64_t id, const float tera[4], const void* data, uint32_t size);
+    void addMirroredWithECC(uint64_t id, const float tera[4], const void* data, uint32_t size, bool checked = false);
     // Packs the tree and writes the file. Returns false with err set on failure.
     bool write(const std::string& path, std::string& err);
 

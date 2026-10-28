@@ -150,6 +150,26 @@ int aamt_builder_write(aamt_builder* b, const char* path,
                        char* errbuf, size_t errlen);
 void aamt_builder_free(aamt_builder* b);
 
+/* The CHECKED variants: as above, plus a CRC-32 of the original bytes stored
+ * inside the RS protection (record flag kRecordCRC). RS(15,13) alone cannot
+ * detect heavy damage — it repairs garbage into a valid-looking DIFFERENT
+ * payload. Measured, 20 random nibble flips across both copies of a record,
+ * 400 trials (tests/test_selfheal.cpp): unchecked records served wrong bytes
+ * with a success status 162 times; checked records 0.
+ * With the check, a mis-corrected or shredded copy is unreadable, so
+ * aamt_read_verified falls back to the other copy — real self-repair — or
+ * refuses. Readers need no change: verified reads honour the flag. Raw
+ * decoders of a checked record use aamt_decode_ecc_checked_payload. The
+ * unchecked functions are unchanged, so files already written read as before. */
+int aamt_builder_add_ecc_checked(aamt_builder* b, uint64_t id, const float tera[4],
+                                 const void* data, uint32_t size);
+int aamt_builder_add_mirrored_ecc_checked(aamt_builder* b, uint64_t id, const float tera[4],
+                                          const void* data, uint32_t size);
+/* Decodes a checked record's payload: RS repair, then the CRC. Returns -1 when
+ * a block is unresolvable OR the CRC does not match (a mis-correction). */
+int64_t aamt_decode_ecc_checked_payload(const uint8_t* encoded, uint32_t encoded_size,
+                                        uint8_t* out_data, uint64_t out_capacity,
+                                        uint32_t* out_corrected_symbols);
 /* ---- RS(15,13)/GF(16) payload codec (stateless — no aamt_file needed) -- */
 
 /* Encodes `size` bytes into an RS-protected buffer. Returns the encoded

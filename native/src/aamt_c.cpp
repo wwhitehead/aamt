@@ -276,6 +276,29 @@ uint32_t aamt_encode_ecc_payload(const uint8_t* data, uint32_t size,
     return static_cast<uint32_t>(encoded.size());
 }
 
+int aamt_builder_add_ecc_checked(aamt_builder* b, uint64_t id, const float tera[4],
+                                 const void* data, uint32_t size) {
+    b->builder->addWithECC(id, tera, data, size, /*checked=*/true);
+    return 0;
+}
+
+int aamt_builder_add_mirrored_ecc_checked(aamt_builder* b, uint64_t id, const float tera[4],
+                                          const void* data, uint32_t size) {
+    b->builder->addMirroredWithECC(id, tera, data, size, /*checked=*/true);
+    return 0;
+}
+
+int64_t aamt_decode_ecc_checked_payload(const uint8_t* encoded, uint32_t encoded_size,
+                                        uint8_t* out_data, uint64_t out_capacity,
+                                        uint32_t* out_corrected_symbols) {
+    const auto result = aamt::rs15_13::decodeChecked(encoded, encoded_size);
+    if (out_corrected_symbols) *out_corrected_symbols = result.correctedSymbols;
+    if (!result.ok) return -1;
+    const uint64_t n = std::min<uint64_t>(out_capacity, result.data.size());
+    std::memcpy(out_data, result.data.data(), n);
+    return static_cast<int64_t>(result.data.size());
+}
+
 int64_t aamt_decode_ecc_payload(const uint8_t* encoded, uint32_t encoded_size,
                                 uint8_t* out_data, uint64_t out_capacity,
                                 uint32_t* out_corrected_symbols) {

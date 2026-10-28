@@ -31,7 +31,18 @@ console.log(converged.toJson());
 node bindings/js/test-crdt.mjs
 ```
 
-The Python↔JS interoperability check used during development creates a store in
-`aamt_crdt.py`, imports its JSON in `aamt-crdt.mjs`, re-exports it, and compares
-the two objects. The two `to_json` outputs are byte-identical for the same record
-set.
+The Python↔JS interoperability check creates a store in `aamt_crdt.py`, imports
+its JSON in `aamt-crdt.mjs`, re-exports it, imports that back into Python, and
+compares the parsed records: they are identical in both directions, a 63-bit
+`replica_id` included. The two serializations are equal as JSON, not as bytes --
+Python's `json.dumps` writes `", "`/`": "` separators and keeps insertion order,
+while `toJson()` is compact and sorts records by id as a string -- so compare
+parsed records, never raw text.
+
+## In a browser
+
+Every rule lives in `aamt-crdt-core.mjs`, which has no Node imports (base64 is its own, matching `Buffer` and
+Python's `base64` byte for byte). `aamt-crdt.mjs` re-exports it and adds only `localReplicaId`, which persists a
+replica id to disk. A browser tab uses `randomReplicaId()` — one replica per tab, which is what makes two tabs two
+writers.
+

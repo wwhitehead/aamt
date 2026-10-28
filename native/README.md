@@ -15,10 +15,27 @@ Positioning (per WP-23 §7): this is the **geometric memory substrate beside**
 the LLM runtime — payloads carry EXP-01 trit anchors, WP-21 evicted capsules,
 WP-22 coverage state, embeddings/HNSW shards. It does not replace model weights.
 
+## Self-repair
+
+Records can be written with two independent defences, and read back through one verified path:
+
+- **Mirror** (`aamt_builder_add_mirrored`): a second copy at the record's Householder-T reflection — the opposite half
+  of the tree, a different region of the file. `aamt_verify_chirality` audits every pair.
+- **RS(15,13)/GF(16)** (`aamt_builder_add_ecc`): exact repair of one corrupted nibble per 13-nibble block.
+- **Checked** (`aamt_builder_add_mirrored_ecc_checked`): both, plus a CRC-32 of the original bytes inside the RS
+  protection. RS alone cannot detect heavy damage — it repairs garbage into a valid-looking different payload — so
+  without the check a damaged copy can be served wrong. With it, a damaged copy is unreadable and
+  `aamt_read_verified` serves the other one, or refuses.
+
+`tests/test_selfheal.cpp`, 20 random nibble flips across both copies of a record, 400 trials: unchecked, 162 reads
+returned wrong bytes with a success status; checked, 0 — and shredding either copy of a checked record is recovered
+from the other. One flipped nibble anywhere is always repaired. Use the checked builders for new files; files written
+with the unchecked ones read exactly as before.
+
 ## Build & test
 
 ```sh
-./build.sh test        # cmake + ctest (round-trip + journal replay)
+./build.sh test        # cmake + ctest (round-trip + journal replay, GF(16) RS, self-repair)
 ```
 
 ## CLI
