@@ -1,0 +1,24 @@
+# GitHub Pages builds this directory with Jekyll. No workflow, because every plugin below is on the Pages
+# whitelist and between them they do the whole job:
+#
+#   optional-front-matter  these guides carry no YAML header — they are read on GitHub too, where one would
+#                          render as a stray table — so without this they are copied through as raw .md
+#   default-layout         gives each page the theme's layout without it being declared
+#   titles-from-headings   takes each page's title from its first `# heading`
+#   relative-links         rewrites `MODEL-WRAPPER-GUIDE.md` to `MODEL-WRAPPER-GUIDE.html`, which is what
+#                          makes the cross-references between the guides survive being rendered
+plugins:
+  - jekyll-optional-front-matter
+  - jekyll-default-layout
+  - jekyll-titles-from-headings
+  - jekyll-relative-links
+
+theme: jekyll-theme-primer
+
+markdown: kramdown
+kramdown:
+  # The guides lean on tables, and GFM is what renders them.
+  input: GFM
+
+title: .aamt
+description: The GPU-native file format for local AI — and the CLI that serves it.
