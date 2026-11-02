@@ -26,6 +26,37 @@ M1 Max, `aamt bench gaian` measured 41.2 tok/s on 128-token replies, and the
 first token of a 4,096-token prompt fell from 32.7 s to 178 ms once the prompt
 had been read (184×). Run it and post your card.
 
+## See it running, without installing anything
+
+Three pages, all of which do the work in your own browser tab rather than
+showing you a video of it.
+
+| | |
+|---|---|
+| **[Documentation](https://wwhitehead.github.io/aamt/)** | The CLI guides and the MCP server, rendered from `docs/` in this repository. |
+| **[The format, live](https://asamanthinks.com/aamt)** | A model writes a town, four people walk it and think, and every thought becomes a coordinate, is packed into a real `.aamt` and is recalled by geometry — with a console streaming the math as it happens. |
+| **[Sample apps](https://asamanthinks.com/aamt/apps)** | Eight ordinary applications whose memory is a `.aamt` file on the machine they run on: a bakery assistant, six fleet and robotics sites (warehouse, ground, air, sea, grid, datacentre), and a model registry that admits or refuses artifacts by identity and licence. |
+
+On the apps page the application is on the left and the engine's own log is on
+the right, because they are the same program. Nothing calls a server. The
+scenarios and the sites are simulated; the projection, the routing, the packing
+and the hashing are real, computed in the tab by `libaamt.wasm` — the same C++
+core as this CLI — and the page says which is which.
+
+The same scenario can be driven three ways, which is the part most people do
+not expect:
+
+- **Replay** needs no GPU and no download. Only the model's words are recorded;
+  your browser recomputes every projection, route, pack and hash. The warehouse
+  replay lands on `fnv1a-64 5ca10f1e201a0155`, byte-identical to what its live
+  GPU run produced.
+- **Your GPU** loads InnerSight into the tab on WebGPU and answers there.
+- **Your CLI** is this package. Run `npx @asamanthinks/aamt serve innersight`
+  and the page will use it over the OpenAI API on `127.0.0.1`: the terminal
+  supplies the words, the tab still does the geometry. This one needs the page
+  served over http on your own machine — a browser will not let an https page
+  reach `127.0.0.1`.
+
 ## Check the format yourself
 
 ```
@@ -168,6 +199,7 @@ and what measurement changed.
 | Path | What | Tests |
 |---|---|---|
 | [`SPEC.md`](SPEC.md) | The byte layouts: tensor, model (AMDL), container v1.x, substrate v0, and how to tell them apart | — |
+| [`docs/`](https://wwhitehead.github.io/aamt/) | The CLI and MCP guides, published by GitHub Pages straight from this directory | — |
 | `native/` | C++17 substrate core, C ABI, CLI, Python bindings, WebAssembly build, Metal zero-copy bench, CRDT bindings (JS runs in a browser) | round-trip, journal replay, GF(16) Reed–Solomon, self-repair |
 | `js/packages/tera` | The coordinate math: 16 Meji orthants, 256 Odu cells, product Fisher–Rao metric, deterministic transcendentals | ALU properties, 400-case parity fixture |
 | `js/packages/container` | The unified container: five layers, 384-bit ids, streaming writer, zero-copy reader, Odu index, adaptive tree | 118, including bit-flip fuzzing |
