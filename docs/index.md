@@ -9,8 +9,10 @@ these are the guides for reading, baking and serving one.
 | Guide | What it answers |
 |---|---|
 | [Serve a model into the tools you already use](aamt/SERVE-YOUR-OWN-MODEL.md) | `aamt serve` answers the OpenAI HTTP API, so these models drop into Ollama's UI, LM Studio, Open WebUI, Cursor and LangChain. Also what `aamt inspect` refuses, and how `aamt bake` reproduces the curated recipe. |
+| [Baking Bonsai 2 and GGUF checkpoints](aamt/BONSAI-2-AND-GGUF.md) | `aamt bake model.gguf --out model.aamt --policy bonsai2`: direct GGUF ternary decoding, Hadamard and hybrid-attention sentinels, and least-squares group scales. |
 | [Putting any model in an `.aamt` wrapper](aamt/MODEL-WRAPPER-GUIDE.md) | Running a model you did not bake — GGUF, safetensors, anything a server engine loads — under the same identity, provenance and policy rules, **without converting the weights**. |
 | [Which shipped models can be rebuilt, and which cannot](aamt/MODEL-REPRODUCIBILITY.md) | What each curated model was baked from, whether that source still exists, and what a byte-for-byte comparison of a rebake actually shows. |
+| [MaiiaM T.E.R.A World Live 3D Wrapped Game](https://asamanthinks.tech) | Live 3D Living World, Embedded MaiiaM GameKernel Lite, In-Game MaiiaM Browser NPC App Studio, Voice Alchemy & Planetary WebGPU Swarm (`aamt viewer`). |
 
 ## The Model Context Protocol server
 

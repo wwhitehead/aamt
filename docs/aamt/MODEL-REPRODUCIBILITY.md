@@ -28,6 +28,9 @@ function of the weights — `compute_tera_bounds` returns `t` (from variance), `
 floating-point addition is not associative, so two correct evaluations of the same weights can land on
 different last digits. **Both are right.** Neither describes a different model.
 
+That is a claim about the blob. Whether the blob *works* is a different question with a different check —
+[§9](#9-what-proves-a-model-works-and-what-only-proves-a-kernel-works).
+
 ---
 
 ## 2. The three models, and what each was baked from
@@ -185,3 +188,55 @@ with the files published before the fix — for NightOwl that is now unachievabl
 would need the re-release described in [§6](#6-why-this-was-not-re-released).
 
 To bake a model of your own, see [Serve a model into the tools you already use](SERVE-YOUR-OWN-MODEL.md).
+
+---
+
+## 9. What proves a model works, and what only proves a kernel works
+
+Everything above is about the *blob* — whether a given `.aamt` can be rebuilt, and whether the rebuild lands on
+the same weights. That is a different question from the one a user is actually asking, which is whether the
+model can talk. The two need different checks, and the difference is not cosmetic: **one of them can pass on a
+file that is broken.**
+
+| Check | What it varies | What it can tell you |
+|---|---|---|
+| `host/generate-smoke.ts` | The checkpoint | Whether this file produces language at all |
+| `host/gemm-v4-check.ts`, `host/verify-batch-parity.ts` | Two kernels on the *same* weights | Whether the kernels agree with each other |
+| `host/session-bench.ts` | Nothing — it times one path | How fast that path is |
+
+The middle row is the one to be careful with, and the reason is in its own definition. A kernel parity check
+compares two implementations reading identical weights, so **when the weights are wrong, both are wrong
+together and the check passes.** It is a self-consistency test: it is evidence about the kernel, never about
+the checkpoint. The same is true of a tok/s figure — a model whose tensors are permuted decodes at a perfectly
+healthy rate, because permuted weights are still weights.
+
+This is not hypothetical here. The first Flow-3 bake passed the kind census, matched the shipped Flow 2's
+sentinels byte for byte, and passed `PARITY OK`. Asked a question it produced:
+
+```
+)/()/()/()/()/()/()/()/()/(/S/S/S)/()/()/()/(/S)/(/S)/(/S)/(/S)/(/S)/(/S)/(/S)/(/S)…
+```
+
+What found it was not a check in this repository. It was a **diff against a working model** — the same
+technique §7 describes for weights, applied to the tensor *layout* rather than the bytes. The full account is
+[Bonsai 2 §5](BONSAI-2-AND-GGUF.md#the-value-heads-are-interleaved-and-ssm_a-is-not-a_log).
+
+So the ordering is the point:
+
+1. **Ask the model a question first.** `generate-smoke.ts` is the primary gate on a freshly baked checkpoint.
+   It varies the thing that matters, and it is the only check here that can fail on a file the others accept.
+2. **Then time it.** A tok/s figure is meaningful once the model speaks, and misleading before that.
+3. **Treat a parity failure as evidence about the kernel** — and a parity pass as evidence about nothing but
+   the kernel.
+
+### The same discipline, arrived at from the other end
+
+This is the shape of a **matched control**, and it is worth naming because it generalises past kernels. A
+comparison is only evidence if the two things being compared differ in exactly one respect. Two kernels on one
+set of weights differ in nothing that touches correctness of the *weights*; a from-scratch and a fine-tuned run
+of the same architecture differ in exactly one thing, which is why
+[`leochlon/areals`](https://github.com/leochlon/areals) states every one of its transfer results against a
+scratch fit at identical architecture ("Windsor scratch fits use the same architecture as pretrained fits").
+
+The failure mode that discipline exists to prevent is the one above: two measurements sharing an assumption can
+agree, and both be wrong. A control that varies the assumption is the only thing that catches it.
