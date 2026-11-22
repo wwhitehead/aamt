@@ -13,9 +13,29 @@ commercial use is licensed ([LICENSE.md](LICENSE.md), [COMMERCIAL.md](COMMERCIAL
 
 ## Try it: one command
 
-```
-npx @asamanthinks/aamt                  # chat with InnerSight on your GPU (0.72 GB download)
+```bash
+# Install or update globally (or run zero-install with npx @asamanthinks/aamt@latest):
+npm install -g @asamanthinks/aamt@latest
+
+npx @asamanthinks/aamt                  # interactive start screen (or chat with InnerSight, 0.72 GB)
+npx @asamanthinks/aamt tui              # 4-Pane Sovereign Terminal UI Cockpit (.weslyn MoE · Swarm · AgentStudio · Thin Viewer)
+npx @asamanthinks/aamt update           # check npm for CLI updates & verify/refresh cached .aamt models
+
+# 12 Language/Expert Models + 4 Visual Diffusion Models (Glimpse/Glimmer & Vista):
 npx @asamanthinks/aamt run gaian        # BeyondSight GaIaN, 8B ternary (3.23 GB)
+npx @asamanthinks/aamt run gaian-code   # BeyondSight GaIaN CodeExpert, 8B ternary (3.07 GB)
+npx @asamanthinks/aamt run gaian-math   # BeyondSight GaIaN MathExpert, 8B ternary (3.07 GB)
+npx @asamanthinks/aamt run gaian-unity  # BeyondSight GaIaN UnityCSharpExpert, 8B ternary (3.07 GB)
+npx @asamanthinks/aamt run gaian-draft  # BeyondSight GaIaN Draft, 0.6B int4 speculative reflex (0.47 GB)
+npx @asamanthinks/aamt run innersight2-4b # InnerSight 2 4B, ternary hybrid-attention (1.75 GB)
+npx @asamanthinks/aamt run nomad        # BeyondSight Nomad, 27B 1-bit (7.21 GB)
+npx @asamanthinks/aamt run ezmarelda    # BeyondSight Ezmarelda, 27B 1-bit hybrid (7.21 GB)
+npx @asamanthinks/aamt run flow2        # BeyondSight Flow 2, 27B ternary (10.50 GB)
+npx @asamanthinks/aamt run flow3        # Flow 3, 27B ternary, 64 layers, 262k context (10.50 GB)
+npx @asamanthinks/aamt pull glimpse     # BeyondSight Glimpse DiT (alias: glimmer), 1-bit diffusion (1.70 GB)
+npx @asamanthinks/aamt pull vista       # BeyondSight Vista DiT, ternary diffusion (2.16 GB)
+npx @asamanthinks/aamt pull encoder-4b  # BeyondSight Encoder 4B, int4 text encoder (1.95 GB)
+npx @asamanthinks/aamt pull vae-flux2   # BeyondSight VAE Flux2, f32 latent decoder (0.34 GB)
 npx @asamanthinks/aamt bench gaian      # measure it on your machine; prints a shareable card
 ```
 
